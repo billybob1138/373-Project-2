@@ -116,7 +116,12 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 			if(key == null && pairs[i].key == key) {
 				return i;
 			} 
-			if(pairs[i].key.equals(key)) {
+			
+			if(pairs[i].key == null && key == null) {
+				return i;
+			}
+			if(key != null && pairs[i].key != null && pairs[i].key.equals(key)) {
+				
 				return i;
 			}
 		}
@@ -147,24 +152,46 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 	@Override
 	public Iterator<KVPair<K,V>> iterator() {
 		//need to make transition to return KVpair 
-		KVPair<K,V> first = new KVPair<K,V>(pairs[0].key, pairs[0].value);
-		return new ArrayDictionaryIterator<>(first);
+		//KVPair<K,V> pair = new KVPair<K,V>(pairs[0].key, pairs[0].value);
+		return new ArrayDictionaryIterator<>(-1);
 	}
 	
-	private class ArrayDictionaryIterator<T> implements Iterator<T> {
-		
+	private class ArrayDictionaryIterator<T> implements Iterator<KVPair<K,V>> {
 		private KVPair<K,V> current;
+		private int index;
 
-		public ArrayDictionaryIterator(KVPair<K,V> current) {
-			this.current = current;
+		public ArrayDictionaryIterator(int index) {
+			if(index == -1) {
+				this.index = index;
+				current = new KVPair<K,V>(null, null);
+			} else {
+				this.index = index;
+				current = convert(index);
+			}
+		}
+		
+		private KVPair<K,V> convert(int index) {
+			return new KVPair<K,V>(pairs[index].key, pairs[index].value);
 		}
 		
 		public boolean hasNext() {
+			if(sizeUsed - 1 <= index) {
+				return false;
+			}
+//			if(pairs[index + 1].key == null) {
+//				return false;
+//			}
 			return true;
 		}
 		
-		public T next() {
-			return null;
+		public KVPair<K,V> next() {
+			if(hasNext()) {
+				index++;
+				current = convert(index);
+				return current;
+			} else {
+				throw new NoSuchElementException();
+			}			
 		}
 	}
 }

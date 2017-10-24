@@ -15,13 +15,23 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private IDictionary<K, V>[] chains;
-
+    private int[] primes = {23, 37, 73, 149, 307, 613, 1223, 2441, 4889, 9781, 19559};
+    int sizeIndex  = -1;
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ChainedHashDictionary() {
-        throw new NotYetImplementedException();
+        chains = makeArrayOfChains(11);
     }
 
+    private void resize() {
+    	sizeIndex++;
+    	// NEED TO MAKE A NEW ARRAY OF CHAINS AND PUT IN THE CONTENTS OF THE OLD CHAINS
+    	// ARRAY IN THE NEW SPOTS BASED ON THE NEW HASH FUNCTION!
+//    	IDictionary<K,V>[] newChains = makeArrayOfChains(primes[sizeIndex]);
+//    	for(int i = 0; i < chains.size; i++) {
+//    		newChains[i] = 
+//    	}
+    }
     /**
      * This method will return a new, empty array of the given size
      * that can contain IDictionary<K, V> objects.

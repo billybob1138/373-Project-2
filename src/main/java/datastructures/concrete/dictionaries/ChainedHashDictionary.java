@@ -15,22 +15,28 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private IDictionary<K, V>[] chains;
-    private int[] primes = {23, 37, 73, 149, 307, 613, 1223, 2441, 4889, 9781, 19559};
-    int sizeIndex  = -1;
+    int size;
+    int numElements;
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ChainedHashDictionary() {
-        chains = makeArrayOfChains(11);
+    	size = 0;
+    	numElements = 0;
+        chains = makeArrayOfChains(10);
     }
 
     private void resize() {
-    	sizeIndex++;
+    	IDictionary<K,V>[] oldChains = chains;
     	// NEED TO MAKE A NEW ARRAY OF CHAINS AND PUT IN THE CONTENTS OF THE OLD CHAINS
     	// ARRAY IN THE NEW SPOTS BASED ON THE NEW HASH FUNCTION!
-//    	IDictionary<K,V>[] newChains = makeArrayOfChains(primes[sizeIndex]);
-//    	for(int i = 0; i < chains.size; i++) {
-//    		newChains[i] = 
-//    	}
+    	chains = makeArrayOfChains(oldChains.length * 2);
+    	for(int i = 0; i < oldChains.length; i++) {
+    		if(chains[i] != null) {
+	    		for(KVPair<K,V> pair : chains[i]) {
+	    			put(pair.getKey(), pair.getValue());
+	    		}
+    		}
+    	}
     }
     /**
      * This method will return a new, empty array of the given size
@@ -48,27 +54,67 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        throw new NotYetImplementedException();
+    	if(key == null) {
+    		return chains[0].get(key);
+    	}
+    	if(containsKey(key)) {
+    		return chains[key.hashCode() % chains.length].get(key);
+    	} else {
+    		throw new NoSuchKeyException();
+    	}
     }
 
     @Override
     public void put(K key, V value) {
-        throw new NotYetImplementedException();
+    	if(numElements >= chains.length * 10) {
+    		resize();
+    	}
+    	int index;
+    	if(key == null) {
+    		index = 0;
+    	} else {
+    		index = key.hashCode() % chains.length;
+    	}
+    	if(chains[index] == null) {
+    		size++;
+    		chains[index] = new ArrayDictionary<K,V>();
+    	}
+    	numElements++;
+    	chains[index].put(key, value);
+        
     }
 
     @Override
     public V remove(K key) {
-        throw new NotYetImplementedException();
+    	if(containsKey(key)) {
+    		V value;
+    		if(key == null) {
+        		value = chains[0].remove(key);
+        		
+        	} else {
+        		value = chains[key.hashCode() % chains.length].remove(key);
+        	}
+    		return value;
+    	} else {
+    		throw new NoSuchKeyException();
+    	}
     }
 
     @Override
     public boolean containsKey(K key) {
-        throw new NotYetImplementedException();
+    	for(int i = 0; i < chains.length; i++) {
+    		
+			if(chains[i] != null && chains[i].containsKey(key)) {
+				return true;
+			}
+    		
+    	}
+    	return false;
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+    	return size;
     }
 
     @Override
@@ -115,19 +161,43 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
      */
     private static class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
         private IDictionary<K, V>[] chains;
-
+        private int iteratorIndex = -1;
+        private IDictionary<K,V> current;
+        private Iterator<KVPair<K,V>> iterator;
+        
         public ChainedIterator(IDictionary<K, V>[] chains) {
             this.chains = chains;
+            current = new ArrayDictionary<K,V>();
+            iterator = current.iterator();
         }
 
         @Override
         public boolean hasNext() {
-            throw new NotYetImplementedException();
+        	if(iterator.hasNext()) {
+        		return true;
+        	}
+        	
+            for(int i = iteratorIndex; i < chains.length; i++) {
+            	
+            	if(!chains[i].isEmpty()) {
+            		iteratorIndex = i;
+            		return true;
+            	}
+            }
+            return false;
         }
 
         @Override
         public KVPair<K, V> next() {
-            throw new NotYetImplementedException();
+        	if(!iterator.hasNext()) {
+        		if(hasNext()) {
+        			iterator = chains[iteratorIndex].iterator();
+        		} else {
+        			throw new NoSuchElementException();
+        		}
+	            
+        	} 
+        	return iterator.next();
         }
     }
 }

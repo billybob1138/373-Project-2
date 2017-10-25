@@ -289,7 +289,6 @@ public abstract class TestDictionary extends BaseTest {
 
         dict.put(null, "hello");
         dict.put(null, "world");
-
         assertEquals(4, dict.size());
         assertEquals("world", dict.get(null));
         assertTrue(dict.containsKey(null));
@@ -343,8 +342,9 @@ public abstract class TestDictionary extends BaseTest {
 
             assertEquals(expectedValue, actualValue);
             copy.remove(key);
+            
         }
-
+        System.out.println(copy.size());
         assertTrue(copy.isEmpty());
     }
 

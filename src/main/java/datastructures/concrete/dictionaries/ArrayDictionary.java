@@ -59,6 +59,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 	@Override
 	public void put(K key, V value) {
 		reallocate();
+		
 		if (containsKey(key)) {
 			pairs[findKey(key)].value = value;
 		} else {
@@ -103,26 +104,27 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 	}
 
 	private void shift(int index) {
-		for (int i = index; i < sizeUsed; i++) {
+		for (int i = index; i < sizeUsed - 1; i++) {
 			pairs[i] = pairs[i + 1];
 		}
 		sizeUsed--;
 	}
 
 	private int findKey(K key) {
-		if (sizeUsed == 0)
+		if (sizeUsed == 0) {
 			return -1;
-		for(int i = 0; i < sizeUsed; i++) {
-			if(key == null && pairs[i].key == key) {
-				return i;
-			} 
-			
-			if(pairs[i].key == null && key == null) {
-				return i;
+		}
+		if(key == null) {
+			for(int i = 0; i < sizeUsed; i++) {
+				if(pairs[i].key == null) {
+					return i;
+				} 
 			}
-			if(key != null && pairs[i].key != null && pairs[i].key.equals(key)) {
-				
-				return i;
+		} else {
+			for(int i = 0; i < sizeUsed; i++) {				
+				if(pairs[i].key != null && pairs[i].key.equals(key)) {
+					return i;
+				}
 			}
 		}
 		return -1;
@@ -139,9 +141,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 			this.value = value;
 		}
 		
-//		public Pair<K, V> iterator() {
-//			
-//		}
 
 		@Override
 		public String toString() {
@@ -178,9 +177,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 			if(sizeUsed - 1 <= index) {
 				return false;
 			}
-//			if(pairs[index + 1].key == null) {
-//				return false;
-//			}
 			return true;
 		}
 		

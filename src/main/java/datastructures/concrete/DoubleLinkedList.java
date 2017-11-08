@@ -2,10 +2,11 @@ package datastructures.concrete;
 
 import datastructures.interfaces.IList;
 import misc.exceptions.EmptyContainerException;
-import misc.exceptions.NotYetImplementedException;
+
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 //CSE 373 Peter Schultz and Armin Rouz
 //10/4/17
 /**
@@ -153,7 +154,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 			}
 			size++;
 		}
-		
+
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 		if (index > size - 1 || index < 0) {
 			throw new IndexOutOfBoundsException();
 		}
-		
+
 		if (size == 0) {
 			return null;
 		}
@@ -207,22 +208,22 @@ public class DoubleLinkedList<T> implements IList<T> {
 	public int indexOf(T item) {
 		Node<T> cur = front;
 		for (int i = 0; i < size; i++) {
-			if(cur == null) {
+			if (cur == null) {
 				return -1;
 			}
 			if (item != null) {
-				if(cur.data.equals(item)) {
+				if (cur.data.equals(item)) {
 					return i;
-				} 
-				
+				}
+
 			} else {
-				if(cur.data == null) {
-					return i; 
+				if (cur.data == null) {
+					return i;
 				}
 			}
 			cur = cur.next;
 		} // what if item does not exist
-		return -1; 
+		return -1;
 	}
 
 	@Override

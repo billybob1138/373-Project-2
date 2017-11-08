@@ -5,13 +5,13 @@ import java.util.NoSuchElementException;
 import datastructures.concrete.KVPair;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NoSuchKeyException;
-import misc.exceptions.NotYetImplementedException;
+
+
 //CSE 373 Peter Schultz and Armin Rouz
-//10/4/17
+//10/25/17
 /**
  * See IDictionary for more details on what this class should do
  */
-// TEST TEST TEST asdfjasdf;lkjasdf
 public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 	// You may not change or rename this field: we will be inspecting
 	// it using our private tests.
@@ -50,16 +50,18 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
 	@Override
 	public V get(K key) {
-		//if(sizeUsed == 0) return null;
+		// if(sizeUsed == 0) return null;
 		int index = findKey(key);
-		if(index == -1) throw new NoSuchKeyException();
+		if (index == -1) {
+			throw new NoSuchKeyException();
+		}
 		return pairs[index].value;
 	}
 
 	@Override
 	public void put(K key, V value) {
 		reallocate();
-		
+
 		if (containsKey(key)) {
 			pairs[findKey(key)].value = value;
 		} else {
@@ -72,7 +74,9 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 	@Override
 	public V remove(K key) {
 		int index = findKey(key);
-		if(index == -1) throw new NoSuchKeyException();
+		if (index == -1) {
+			throw new NoSuchKeyException();
+		}
 		Pair<K, V> temp = pairs[index];
 		shift(index);
 		return temp.value;
@@ -82,9 +86,8 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 	public boolean containsKey(K key) {
 		if (findKey(key) == -1) {
 			return false;
-		} else {
-			return true;
-		}
+		} 
+		return true;
 	}
 
 	@Override
@@ -114,15 +117,15 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 		if (sizeUsed == 0) {
 			return -1;
 		}
-		if(key == null) {
-			for(int i = 0; i < sizeUsed; i++) {
-				if(pairs[i].key == null) {
+		if (key == null) {
+			for (int i = 0; i < sizeUsed; i++) {
+				if (pairs[i].key == null) {
 					return i;
-				} 
+				}
 			}
 		} else {
-			for(int i = 0; i < sizeUsed; i++) {				
-				if(pairs[i].key != null && pairs[i].key.equals(key)) {
+			for (int i = 0; i < sizeUsed; i++) {
+				if (pairs[i].key != null && pairs[i].key.equals(key)) {
 					return i;
 				}
 			}
@@ -130,7 +133,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 		return -1;
 	}
 
-	
 	private static class Pair<K, V> {
 		public K key;
 		public V value;
@@ -140,54 +142,53 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 			this.key = key;
 			this.value = value;
 		}
-		
 
 		@Override
 		public String toString() {
 			return this.key + "=" + this.value;
 		}
 	}
-	
+
 	@Override
-	public Iterator<KVPair<K,V>> iterator() {
-		//need to make transition to return KVpair 
-		//KVPair<K,V> pair = new KVPair<K,V>(pairs[0].key, pairs[0].value);
+	public Iterator<KVPair<K, V>> iterator() {
+		// need to make transition to return KVpair
+		// KVPair<K,V> pair = new KVPair<K,V>(pairs[0].key, pairs[0].value);
 		return new ArrayDictionaryIterator<>(-1);
 	}
-	
-	private class ArrayDictionaryIterator<T> implements Iterator<KVPair<K,V>> {
-		private KVPair<K,V> current;
+
+	private class ArrayDictionaryIterator<T> implements Iterator<KVPair<K, V>> {
+		private KVPair<K, V> current;
 		private int index;
 
 		public ArrayDictionaryIterator(int index) {
-			if(index == -1) {
+			if (index == -1) {
 				this.index = index;
-				current = new KVPair<K,V>(null, null);
+				current = new KVPair<K, V>(null, null);
 			} else {
 				this.index = index;
 				current = convert(index);
 			}
 		}
-		
-		private KVPair<K,V> convert(int index) {
-			return new KVPair<K,V>(pairs[index].key, pairs[index].value);
+
+		private KVPair<K, V> convert(int index) {
+			return new KVPair<K, V>(pairs[index].key, pairs[index].value);
 		}
-		
+
 		public boolean hasNext() {
-			if(sizeUsed - 1 <= index) {
+			if (sizeUsed - 1 <= index) {
 				return false;
 			}
 			return true;
 		}
-		
-		public KVPair<K,V> next() {
-			if(hasNext()) {
+
+		public KVPair<K, V> next() {
+			if (hasNext()) {
 				index++;
 				current = convert(index);
 				return current;
 			} else {
 				throw new NoSuchElementException();
-			}			
+			}
 		}
 	}
 }
